@@ -36,8 +36,8 @@
                         class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00a884] focus:bg-white transition-colors">
                         <div class="flex items-center justify-between mb-1">
                     
-                    <a href="#" class="text-sm text-[#00a884] hover:text-[#008f6f] hover:underline transition-colors">
-                        ¿Olvidaste tu contraseña?
+                    <a href="{{ route('password.request') }}" class="text-sm text-[#00a884] hover:text-[#008f6f] hover:underline transition-colors">
+                    ¿Olvidaste tu contraseña?
                     </a>
                 </div>
                 </div>
