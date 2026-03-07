@@ -23,16 +23,16 @@
                 <p class="text-gray-500 text-sm mt-2">Ingresa tus datos para acceder a tus chats</p>
             </div>
 
-            <form action="#" method="POST">
+            <form action="#">
                 <div class="mb-5">
                     <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nombre de Usuario</label>
-                    <input type="text" id="username" name="username" placeholder="Ej. usuario123" required
+                    <input type="text" id="username" name="username" placeholder="Ej. usuario123" 
                         class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00a884] focus:bg-white transition-colors">
                 </div>
 
                 <div class="mb-8">
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="••••••••" required
+                    <input type="password" id="password" name="password" placeholder="••••••••" 
                         class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00a884] focus:bg-white transition-colors">
                         <div class="flex items-center justify-between mb-1">
                     
@@ -42,11 +42,10 @@
                 </div>
                 </div>
                 
-
-                <button type="submit"
-                    class="w-full bg-[#00a884] hover:bg-[#008f6f] text-white font-semibold py-2.5 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
+                <a href="{{ route('chat') }}" 
+                   class="block text-center w-full bg-[#00a884] hover:bg-[#008f6f] text-white font-semibold py-2.5 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
                     Entrar al Chat
-                </button>
+                </a>
             </form>
 
         </div>

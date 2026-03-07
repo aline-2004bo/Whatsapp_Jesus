@@ -9,7 +9,7 @@ Route::get('/', function () {
 // Ruta para mostrar el chat después de iniciar sesión exitosamente
 Route::get('/chat', function () {
     return view('chat');
-});
+})->name('chat');
 
 // Ruta para mostrar la vista de recuperar contraseña
 Route::get('/olvide-mi-contrasena', function () {
