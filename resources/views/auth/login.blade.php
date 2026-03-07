@@ -1,47 +1,69 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Chat</title>
+    @vite(['resources/css/app.css','resources/js/app.js'])
+</head>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<body class="bg-gradient-to-r from-indigo-500 to-purple-600 h-screen flex items-center justify-center">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+<div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+<h2 class="text-2xl font-bold text-center text-gray-700 mb-6">
+Login al Chat
+</h2>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+<x-auth-session-status class="mb-4" :status="session('status')" />
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+<form method="POST" action="{{ route('login') }}">
+@csrf
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+<div class="mb-4">
+<label class="block text-gray-600">Email</label>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+<input 
+type="email"
+name="email"
+value="{{ old('email') }}"
+required
+class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400"
+>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+<x-input-error :messages="$errors->get('email')" class="mt-2"/>
+</div>
+
+<div class="mb-4">
+<label class="block text-gray-600">Contraseña</label>
+
+<input
+type="password"
+name="password"
+required
+class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400"
+>
+
+<x-input-error :messages="$errors->get('password')" class="mt-2"/>
+</div>
+
+<div class="flex items-center justify-between mb-4">
+
+<label class="flex items-center text-sm text-gray-600">
+<input type="checkbox" name="remember" class="mr-2">
+Recordarme
+</label>
+
+</div>
+
+<button
+class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+>
+Entrar al Chat
+</button>
+
+</form>
+
+</div>
+
+</body>
+</html>
