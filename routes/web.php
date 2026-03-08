@@ -13,7 +13,13 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth','verified'])->name('dashboard');
 
+Route::get('/test-ai', function () {
 
+    $controller = new \App\Http\Controllers\ChatController;
+
+    return $controller->askAI("Hola, ¿cómo estás?");
+
+});
 Route::middleware(['auth'])->group(function () {
 
     // CHAT
