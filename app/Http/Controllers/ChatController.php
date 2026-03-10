@@ -10,33 +10,44 @@ use Illuminate\Support\Facades\Http;
 
 class ChatController extends Controller
 {
-    // Lista de usuarios
+
+    // LISTA DE CONTACTOS
     public function index()
     {
         $users = User::where('id','!=', Auth::id())->get();
         return view('chat', compact('users'));
     }
 
-    // Obtener mensajes entre usuarios
+
+    // OBTENER MENSAJES
     public function messages($id)
     {
+
         $messages = Message::where(function($q) use ($id){
+
             $q->where('sender_id', Auth::id())
               ->where('receiver_id', $id);
+
         })
         ->orWhere(function($q) use ($id){
+
             $q->where('sender_id', $id)
               ->where('receiver_id', Auth::id());
+
         })
-        ->orderBy('created_at', 'asc')
+        ->orderBy('created_at','asc')
         ->get();
 
         return response()->json($messages);
+
     }
 
-    // Enviar mensaje y archivo
+
+
+    // ENVIAR MENSAJE
     public function send(Request $request)
     {
+
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'message' => 'nullable|string',
@@ -50,11 +61,14 @@ class ChatController extends Controller
         $fileName = null;
 
         if($request->hasFile('file')){
+
             $file = $request->file('file');
             $fileName = time().'_'.$file->getClientOriginalName();
             $file->move(public_path('files'), $fileName);
+
         }
 
+        // GUARDAR MENSAJE DEL USUARIO
         Message::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $request->receiver_id,
@@ -62,31 +76,56 @@ class ChatController extends Controller
             'file' => $fileName
         ]);
 
-        return response()->json(['status'=>'ok']);
+
+        // SI ES MENSAJE PARA LA IA
+        if($request->receiver_id == 999 && $request->message){
+
+            $aiReply = $this->askAI($request->message);
+
+            Message::create([
+                'sender_id' => 999,
+                'receiver_id' => Auth::id(),
+                'message' => $aiReply
+            ]);
+
+        }
+
+        return response()->json([
+            'status' => 'ok'
+        ]);
+
     }
 
-    // Método para preguntar a DeepSeek
-    
-public function askAI($message)
-{
-    $apiKey = env('GROQ_API_KEY');
-    $url = env('GROQ_API_URL');
 
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $apiKey,
-        'Content-Type' => 'application/json',
-    ])->post($url, [
-        'model' => 'groq-gpt-1', // cambia según tu modelo Groq disponible
-        'input' => $message
-    ]);
 
-    if ($response->failed()) {
-        return "Error API Groq: " . $response->status() . " - " . $response->body();
+    // CONSULTAR IA (GEMINI)
+    private function askAI($message)
+    {
+
+        $apiKey = "AIzaSyCnfVqhUIlh7zBBJsgOo_GJqj2ohvFCUZI";
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=".$apiKey;
+
+        $response = Http::post($url, [
+            "contents" => [
+                [
+                    "parts" => [
+                        ["text" => $message]
+                    ]
+                ]
+            ]
+        ]);
+
+
+        if($response->failed()){
+            return "Error al conectar con la IA.";
+        }
+
+        $data = $response->json();
+
+        return $data['candidates'][0]['content']['parts'][0]['text'] 
+               ?? "La IA no pudo generar respuesta.";
+
     }
 
-    $data = $response->json();
-
-    // Ajusta según la estructura de respuesta de Groq
-    return $data['output_text'] ?? "La IA no generó respuesta.";
-}
 }
