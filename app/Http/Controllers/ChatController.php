@@ -102,7 +102,7 @@ class ChatController extends Controller
     private function askAI($message)
     {
 
-        $apiKey = "AIzaSyCnfVqhUIlh7zBBJsgOo_GJqj2ohvFCUZI";
+        $apiKey = env('GROQ_API_KEY');
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=".$apiKey;
 

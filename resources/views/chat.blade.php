@@ -218,6 +218,126 @@ color:white;
 cursor:pointer;
 }
 
+
+/* =========================
+RESPONSIVE TABLET
+========================= */
+
+@media (max-width:1024px){
+
+.containerChat{
+height:90vh;
+}
+
+.users{
+width:35%;
+}
+
+.chat{
+width:65%;
+}
+
+.bubble{
+max-width:75%;
+}
+
+}
+
+
+/* =========================
+RESPONSIVE MOVIL
+========================= */
+
+@media (max-width:768px){
+
+.containerChat{
+flex-direction:column;
+height:100vh;
+}
+
+/* lista usuarios */
+
+.users{
+width:100%;
+height:40%;
+border-right:none;
+border-bottom:1px solid #e5e7eb;
+}
+
+/* chat */
+
+.chat{
+width:100%;
+height:60%;
+}
+
+/* mensajes */
+
+.messages{
+padding:12px;
+}
+
+/* burbujas */
+
+.bubble{
+max-width:85%;
+font-size:13px;
+}
+
+/* input enviar */
+
+.send{
+flex-wrap:wrap;
+gap:6px;
+}
+
+.send input[type="text"]{
+width:100%;
+}
+
+.send input[type="file"]{
+width:100%;
+font-size:12px;
+}
+
+.send button{
+width:100%;
+}
+
+}
+
+
+/* =========================
+MOVIL PEQUEÑO
+========================= */
+
+@media (max-width:480px){
+
+.users h3,
+#chatTitle{
+font-size:14px;
+padding:12px;
+}
+
+.user{
+padding:10px;
+font-size:14px;
+}
+
+.messages{
+padding:10px;
+}
+
+.bubble{
+font-size:12px;
+padding:8px 10px;
+}
+
+.chat-image{
+max-width:180px;
+}
+
+}
 </style>
 
 
