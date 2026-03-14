@@ -275,8 +275,7 @@
 
                     data.forEach(msg => {
                         // Determina si el mensaje lo enviaste tú o la otra persona
-                        let className = msg.sender_id == {{ auth()->id() }} ? 'me' : 'other';
-                        
+                        let className = msg.sender_id == "{{auth()->id()}}" ? 'me':'other';                        
                         // Formatear la fecha/hora
                         let date = new Date(msg.created_at);
                         let time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
