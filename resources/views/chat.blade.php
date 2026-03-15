@@ -1,232 +1,243 @@
     <x-app-layout>
 
         <style>
-            .containerChat {
-                display: flex;
-                height: 80vh;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-                background: white;
-            }
+    /* Estenedor principal adaptativo */
+    .containerChat {
+        display: flex;
+        height: 80vh;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        background: white;
+        transition: all 0.3s ease;
+    }
 
-            /* SIDEBAR */
-            .users {
-                width: 30%;
-                background: #f0f6ff;
-                border-right: 1px solid #dbeafe;
-                overflow-y: auto;
-            }
+    /* SIDEBAR - Ajustada para ser flexible */
+    .users {
+        width: 30%;
+        min-width: 250px;
+        background: #f0f6ff;
+        border-right: 1px solid #dbeafe;
+        display: flex;
+        flex-direction: column;
+    }
 
-            .users h3 {
-                background: #2563eb;
-                color: white;
-                margin: 0;
-                padding: 15px;
-                font-weight: 600;
-            }
+    .users-list-container {
+        flex: 1;
+        overflow-y: auto;
+    }
 
-            .user {
-                padding: 14px;
-                cursor: pointer;
-                border-bottom: 1px solid #e5e7eb;
-                transition: 0.2s;
-            }
+    .users h3 {
+        background: #2563eb;
+        color: white;
+        margin: 0;
+        padding: 15px;
+        font-weight: 600;
+    }
 
-            .user:hover {
-                background: #dbeafe;
-            }
+    .user {
+        padding: 14px;
+        cursor: pointer;
+        border-bottom: 1px solid #e5e7eb;
+        transition: 0.2s;
+    }
 
-            /* CHAT */
-            .chat {
-                width: 70%;
-                display: flex;
-                flex-direction: column;
-                background: #f9fafb;
-            }
+    .user:hover {
+        background: #dbeafe;
+    }
 
-            #chatTitle {
-                background: #2563eb;
-                color: white;
-                margin: 0;
-                padding: 15px;
-                font-weight: 600;
-            }
+    /* CHAT - Crece para ocupar el resto */
+    .chat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #f9fafb;
+        min-width: 0; /* Evita que el contenido desborde el flex */
+    }
 
-            /* MENSAJES */
-            .messages {
-                flex: 1;
-                padding: 20px;
-                overflow-y: auto;
-                background: #eef2ff;
-            }
+    #chatTitle {
+        background: #2563eb;
+        color: white;
+        margin: 0;
+        padding: 15px;
+        font-weight: 600;
+    }
 
-            .message {
-                margin: 12px 0;
-                display: flex;
-            }
+    /* MENSAJES */
+    .messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #eef2ff;
+    }
 
-            .me {
-                justify-content: flex-end;
-            }
+    .message {
+        margin: 12px 0;
+        display: flex;
+    }
 
-            .other {
-                justify-content: flex-start;
-            }
+    .me { justify-content: flex-end; }
+    .other { justify-content: flex-start; }
 
-            /* BURBUJAS */
-            .bubble {
-                display: inline-block;
-                padding: 10px 14px;
-                border-radius: 16px;
-                max-width: 65%;
-                font-size: 14px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            }
+    .bubble {
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 16px;
+        max-width: 85%; /* Aumentado para móviles */
+        font-size: 14px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        word-wrap: break-word;
+    }
 
-            .me .bubble {
-                background: #2563eb;
-                color: white;
-                border-bottom-right-radius: 4px;
-            }
+    .me .bubble {
+        background: #2563eb;
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
 
-            .other .bubble {
-                background: white;
-                border: 1px solid #e5e7eb;
-                border-bottom-left-radius: 4px;
-            }
+    .other .bubble {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 4px;
+    }
 
-            /* HORA */
-            .time {
-                font-size: 11px;
-                margin-top: 5px;
-                opacity: 0.7;
-                text-align: right;
-            }
+    .time {
+        font-size: 11px;
+        margin-top: 5px;
+        opacity: 0.7;
+        text-align: right;
+    }
 
-            /* IMAGENES CHAT */
-            .image-container {
-                margin-top: 6px;
-                max-width: 230px;
-                overflow: hidden;
-            }
+    .send button{
+padding:10px 18px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+}
 
-            .chat-image {
-                max-width: 100%;
-                height: auto;
-                border-radius: 10px;
-                cursor: pointer;
-                margin-top: 5px;
-                transition: 0.2s;
-            }
+.send button:hover{
+background:#1d4ed8;
+}
 
-            .chat-image:hover {
-                transform: scale(1.02);
-            }
+    /* AREA ENVIAR RESPONSIVE */
+    .send {
+        display: flex;
+        flex-wrap: wrap; /* Permite que los elementos bajen si no caben */
+        gap: 10px;
+        padding: 12px;
+        border-top: 1px solid #e5e7eb;
+        background: white;
+    }
 
-            /* ARCHIVOS */
-            .file {
-                display: block;
-                margin-top: 6px;
-                font-size: 12px;
-                color: #2563eb;
-                text-decoration: none;
-            }
+    .send input[type="text"] {
+        flex: 1;
+        min-width: 150px;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        outline: none;
+    }
 
-            .file:hover {
-                text-decoration: underline;
-            }
+    .send input[type="file"] {
+        max-width: 100%;
+        font-size: 12px;
+    }
 
-            /* PREVIEW */
-            #preview {
-                margin-top: 5px;
-            }
+    /* VISOR Y OTROS */
+    .image-container { margin-top: 6px; max-width: 100%; overflow: hidden; }
+    .chat-image { max-width: 100%; height: auto; border-radius: 10px; }
 
-            /* AREA ENVIAR */
-            .send {
-                display: flex;
-                gap: 10px;
-                padding: 12px;
-                border-top: 1px solid #e5e7eb;
-                background: white;
-            }
+    /* =============================================
+       MEDIA QUERIES PARA MÓVILES (MÁX 768px)
+       ============================================= */
+    @media (max-width: 768px) {
+        .containerChat {
+            flex-direction: column; /* Apila la lista arriba y el chat abajo */
+            height: 90vh; /* Un poco más alto en móvil */
+        }
 
-            .send input[type="text"] {
-                flex: 1;
-                padding: 10px;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                outline: none;
-            }
+        .users {
+            width: 100%;
+            height: 30%; /* La lista ocupa la parte superior */
+            border-right: none;
+            border-bottom: 2px solid #dbeafe;
+        }
 
-            .send input[type="text"]:focus {
-                border-color: #2563eb;
-                box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
-            }
+        .chat {
+            width: 100%;
+            height: 70%;
+        }
 
-            .send button {
-                padding: 10px 18px;
-                background: #2563eb;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: 600;
-            }
+        .bubble {
+            max-width: 90%; /* Más ancho en pantallas pequeñas */
+        }
+        
+        .send button {
+            width: 100%; /* Botón de enviar a lo ancho en pantallas muy pequeñas */
+        }
+    }
+    /* SIDEBAR - Ajustada para tener scroll interno */
+    .users {
+        width: 30%;
+        min-width: 250px;
+        background: #f0f6ff;
+        border-right: 1px solid #dbeafe;
+        display: flex;
+        flex-direction: column; /* Esto permite que el contenido se apile verticalmente */
+        overflow: hidden; /* Evitamos que el contenedor principal crezca de más */
+    }
 
-            .send button:hover {
-                background: #1d4ed8;
-            }
+    /* NUEVA CLASE: Para que la lista sea la que scrollee */
+    .users-list-container {
+        flex: 1;
+        overflow-y: auto; /* Aquí activamos el scroll */
+    }
 
-            /* VISOR IMAGEN */
-            .viewer {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                display: none;
-                align-items: center;
-                justify-content: center;
-                z-index: 9999;
-            }
+    /* ... (tus otros estilos se quedan igual) ... */
 
-            .viewer img {
-                max-width: 90%;
-                max-height: 90%;
-                border-radius: 10px;
-            }
+    /* AJUSTE EN MEDIA QUERY PARA MÓVIL */
+    @media (max-width: 768px) {
+        .containerChat {
+            flex-direction: column;
+            height: 90vh;
+        }
 
-            .viewer span {
-                position: absolute;
-                top: 20px;
-                right: 30px;
-                font-size: 30px;
-                color: white;
-                cursor: pointer;
-            }
-        </style>
+        .users {
+            width: 100%;
+            height: 35%; /* Ajustamos la altura para que no ocupe toda la pantalla */
+            border-right: none;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .chat {
+            width: 100%;
+            height: 65%;
+        }
+    }
+</style>
 
         <div class="containerChat">
-            
-            <div class="users">
-            <div style="padding: 10px;">
-            <button onclick="abrirModal()" style="width: 40%; padding: 2px; background: #2fa3f0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        
+<div class="users">
+    <div style="padding: 10px;">
+        <button onclick="abrirModal()" style="width: 100%; padding: 8px; background: #2fa3f0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
             + Nuevo Grupo
-            </button>
-            </div>
+        </button>
+    </div>
 
-            <h4 style="padding: 10px 15px; margin: 0; background: #e5e7eb; font-size: 13px; color: #4b5563;">MIS GRUPOS</h4>
+    <div class="users-list-container">
+        <h4 style="padding: 10px 15px; margin: 0; background: #e5e7eb; font-size: 13px; color: #4b5563;">MIS GRUPOS</h4>
         @if(isset($groups) && $groups->count() > 0)
             @foreach($groups as $group)
                 <div class="user" style="display: flex; justify-content: space-between; align-items: center; padding: 0;">
                     <div onclick="openChat({{ $group->id }}, '{{ $group->name }}', true)" style="flex: 1; padding: 14px;">
                         👥 {{ $group->name }}
                     </div>
-                    
                     @if($group->created_by == auth()->id())
-                        <button onclick="eliminarGrupo({{ $group->id }})" style="background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 14px;" title="Eliminar grupo">
+                        <button onclick="eliminarGrupo({{ $group->id }})" style="background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 14px;">
                             🗑️
                         </button>
                     @endif
@@ -236,14 +247,14 @@
             <div style="padding: 10px 15px; font-size: 12px; color: #9ca3af;">No tienes grupos aún.</div>
         @endif
 
-            <h4 style="padding: 10px 15px; margin: 0; background: #e5e7eb; font-size: 13px; color: #4b5563;">USUARIOS</h4>
-            @foreach($users as $user)
+        <h4 style="padding: 10px 15px; margin: 0; background: #e5e7eb; font-size: 13px; color: #4b5563;">USUARIOS</h4>
+        @foreach($users as $user)
             <div class="user" onclick="openChat({{ $user->id }}, '{{ $user->name }}', false)">
                 {{ $user->name }}
             </div>
-            @endforeach
-            </div>
-
+        @endforeach
+    </div>
+</div>
 
             <div class="chat">
                 <h3 id="chatTitle">Selecciona un usuario</h3>
