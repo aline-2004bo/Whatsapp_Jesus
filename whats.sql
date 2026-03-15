@@ -8,6 +8,7 @@
 -- Versión de PHP: 8.2.12
 
 whatswhats
+
 USE whats;
 
 
@@ -269,6 +270,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `avatar`, `email_verified_at`, `pass
 (4, 'Ana Torres', 'ana@mail.com', NULL, NULL, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9Yb6rZ5qX6Ch12yvDqOiiW', NULL, '2026-03-07 14:52:58', '2026-03-07 14:52:58'),
 (5, 'Pedro Garcia', 'pedro@mail.com', NULL, NULL, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9Yb6rZ5qX6Ch12yvDqOiiW', NULL, '2026-03-07 14:52:58', '2026-03-07 14:52:58'),
 (6, 'Admin', 'admin@mail.com', NULL, NULL, '$2y$12$/jkBoC/6VZhDQNErNfT3xueJtAW7LfmwMMzpN8x2F08yvtj1AWi..', NULL, '2026-03-07 21:09:02', '2026-03-07 21:09:02'),
+(999, 'AI Assistant', 'ia@tuplataforma.com', NULL, NULL, 'sin-acceso', NULL, NOW(), NOW()),
 (1000, 'Gae', 'gaelceron45@gmail.com', NULL, NULL, '$2y$12$2UFaD7QHLx0fIK7DdnP6Pei4WurU.gIaBC0.PmXxV12Et0W3.M9um', NULL, '2026-03-09 00:47:28', '2026-03-09 01:58:08');
 
 --
