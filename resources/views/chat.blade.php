@@ -212,21 +212,29 @@
         
         <div class="users">
         <div style="padding: 10px;">
-        <button onclick="abrirModal()" style="width: 100%; padding: 8px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        <button onclick="abrirModal()" style="width: 40%; padding: 2px; background: #2fa3f0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
          + Nuevo Grupo
         </button>
         </div>
 
         <h4 style="padding: 10px 15px; margin: 0; background: #e5e7eb; font-size: 13px; color: #4b5563;">MIS GRUPOS</h4>
-        @if(isset($groups) && $groups->count() > 0)
+    @if(isset($groups) && $groups->count() > 0)
         @foreach($groups as $group)
-            <div class="user" onclick="openChat({{ $group->id }}, '{{ $group->name }}', true)">
-                👥 {{ $group->name }}
+            <div class="user" style="display: flex; justify-content: space-between; align-items: center; padding: 0;">
+                <div onclick="openChat({{ $group->id }}, '{{ $group->name }}', true)" style="flex: 1; padding: 14px;">
+                    👥 {{ $group->name }}
+                </div>
+                
+                @if($group->created_by == auth()->id())
+                    <button onclick="eliminarGrupo({{ $group->id }})" style="background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 14px;" title="Eliminar grupo">
+                        🗑️
+                    </button>
+                @endif
             </div>
         @endforeach
-        @else
+    @else
         <div style="padding: 10px 15px; font-size: 12px; color: #9ca3af;">No tienes grupos aún.</div>
-        @endif
+    @endif
 
         <h4 style="padding: 10px 15px; margin: 0; background: #e5e7eb; font-size: 13px; color: #4b5563;">USUARIOS</h4>
         @foreach($users as $user)
@@ -285,8 +293,9 @@
         </div>
     </div>
 
-// SCRIPTS
     <script>
+
+
         let receiver = null;
         let isGroupChat = false; // Variable para saber si es grupo o chat directo
 
@@ -345,6 +354,25 @@
                     location.reload(); // Recarga para ver el grupo nuevo
                 }
             });
+        }
+        function eliminarGrupo(id) {
+            // Confirmación de seguridad
+            if(confirm("¿Estás segura de que quieres eliminar este grupo? Se borrarán todos los mensajes para todos los integrantes.")) {
+                fetch('/groups/' + id, {
+                    method: 'DELETE',
+                    headers: { 
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'ok') {
+                        location.reload(); // Recargamos para que desaparezca de la lista
+                    } else {
+                        alert("Error: No tienes permiso para eliminar este grupo.");
+                    }
+                });
+            }
         }
 
         // 3. Funciones del visor de imágenes (Original)

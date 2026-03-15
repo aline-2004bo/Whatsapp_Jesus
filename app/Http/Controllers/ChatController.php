@@ -127,7 +127,19 @@ class ChatController extends Controller
 
         return response()->json(['status' => 'ok']);
     }
+// ELIMINAR GRUPO
+    public function deleteGroup($id)
+    {
+        $group = Group::find($id);
 
+        // Verificamos que el grupo exista y que el usuario actual sea el creador
+        if ($group && $group->created_by == Auth::id()) {
+            $group->delete();
+            return response()->json(['status' => 'ok']);
+        }
+
+        return response()->json(['status' => 'error'], 403);
+    }
 
     // CONSULTAR IA (GEMINI) - (TU CÓDIGO INTACTO)
     private function askAI($message)
