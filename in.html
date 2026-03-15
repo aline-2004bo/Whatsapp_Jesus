@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Retícula ISC</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1e88e5;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e88e5;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        button {
+            grid-column: span 2;
+            padding: 10px;
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+
+        .tabla-materias {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        .tabla-materias th, .tabla-materias td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .tabla-materias th {
+            background-color: #1e88e5;
+            color: white;
+        }
+
+        .color-avance-0 { color: red; font-weight: bold; }
+        .color-avance-25 { color: orange; font-weight: bold; }
+        .color-avance-50 { color: blue; font-weight: bold; }
+        .color-avance-75 { color: green; font-weight: bold; }
+
+        .seriada { background-color: #fff3e0; font-weight: bold; }
+        .btn-eliminar {
+            background-color: #e53935;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-eliminar:hover { background-color: #b71c1c; }
+
+        .resumen {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e1f5fe;
+            border-left: 6px solid #0288d1;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Retícula ISC</h1>
+    </header>
+
+    <main>
+        <h2>Registro de Materias</h2>
+        <form id="registroForm">
+            <div>
+                <label for="materia">Nombre de la materia:</label>
+                <input type="text" id="materia" required>
+            </div>
+            <div>
+                <label for="creditos">Créditos:</label>
+                <input type="number" id="creditos" min="1" max="10" required>
+            </div>
+            <div>
+                <label for="seriada">Seriada:</label>
+                <select id="seriada" required>
+                    <option value="">Selecciona</option>
+                    <option value="Sí">Sí</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div>
+                <label for="cuatrimestre">Cuatrimestre:</label>
+                <input type="number" id="cuatrimestre" min="1" max="10" required>
+            </div>
+            <div>
+                <label for="clave">Clave:</label>
+                <input type="text" id="clave" required>
+            </div>
+            <div>
+                <label for="avance">Avance (%):</label>
+                <input type="number" id="avance" min="0" max="100" required>
+            </div>
+            <button type="submit">Registrar Materia</button>
+        </form>
+
+        <table class="tabla-materias" id="tablaMaterias">
+            <thead>
+                <tr>
+                    <th>Materia</th>
+                    <th>Créditos</th>
+                    <th>Seriada</th>
+                    <th>Cuatrimestre</th>
+                    <th>Clave</th>
+                    <th>Avance (%)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Materias registradas aparecerán aquí -->
+            </tbody>
+        </table>
+
+        <div class="resumen" id="resumen" style="display:none;">
+            <strong>Resumen de Avance:</strong>
+            <p id="promedio">Promedio de avance: 0%</p>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('registroForm');
+        const tablaBody = document.querySelector('#tablaMaterias tbody');
+        const resumen = document.getElementById('resumen');
+        const promedioText = document.getElementById('promedio');
+
+        let materias = [];
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const materia = document.getElementById('materia').value.trim();
+            const creditos = parseInt(document.getElementById('creditos').value);
+            const seriada = document.getElementById('seriada').value;
+            const cuatrimestre = parseInt(document.getElementById('cuatrimestre').value);
+            const clave = document.getElementById('clave').value.trim();
+            const avance = parseFloat(document.getElementById('avance').value);
+
+            if (avance < 0 || avance > 100) {
+                alert("El porcentaje de avance debe estar entre 0 y 100.");
+                return;
+            }
+
+            const materiaObj = { materia, creditos, seriada, cuatrimestre, clave, avance };
+            materias.push(materiaObj);
+            actualizarTabla();
+            form.reset();
+        });
+
+        function actualizarTabla() {
+            tablaBody.innerHTML = '';
+            let totalAvance = 0;
+
+            materias.forEach((m, index) => {
+                totalAvance += m.avance;
+
+                // Color del avance
+                let claseAvance = '';
+                if (m.avance <= 25) claseAvance = 'color-avance-0';
+                else if (m.avance <= 50) claseAvance = 'color-avance-25';
+                else if (m.avance <= 75) claseAvance = 'color-avance-50';
+                else claseAvance = 'color-avance-75';
+
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${m.materia}</td>
+                    <td>${m.creditos}</td>
+                    <td class="${m.seriada==='Sí' ? 'seriada' : ''}">${m.seriada}</td>
+                    <td>${m.cuatrimestre}</td>
+                    <td>${m.clave}</td>
+                    <td class="${claseAvance}">${m.avance}%</td>
+                    <td><button class="btn-eliminar" onclick="eliminarMateria(${index})">Eliminar</button></td>
+                `;
+                tablaBody.appendChild(fila);
+
+                // Alertas
+                if (m.avance < 50) {
+                    console.warn(`Alerta: Avance bajo en la materia ${m.materia}`);
+                }
+                if (m.seriada === 'Sí' && m.avance < 100) {
+                    console.warn(`Atención: Materia seriada pendiente: ${m.materia}`);
+                }
+            });
+
+            resumen.style.display = materias.length ? 'block' : 'none';
+            const promedio = (totalAvance / materias.length).toFixed(2);
+            promedioText.innerText = `Promedio de avance: ${promedio}%`;
+        }
+
+        function eliminarMateria(index) {
+            if (confirm(`¿Deseas eliminar la materia ${materias[index].materia}?`)) {
+                materias.splice(index, 1);
+                actualizarTabla();
+            }
+        }
+    </script>
+</body>
+</html>
