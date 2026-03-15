@@ -9,6 +9,9 @@ class Group extends Model
 {
     use HasFactory;
 
+    // ¡ESTA ES LA LÍNEA NUEVA QUE ARREGLA EL ERROR!
+    const UPDATED_AT = null;
+
     protected $fillable = ['name', 'created_by'];
 
     // Un grupo tiene muchos usuarios

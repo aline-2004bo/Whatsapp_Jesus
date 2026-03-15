@@ -71,4 +71,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/profile',[ProfileController::class,'destroy'])->name('profile.destroy');
 
+    Route::post('/groups/create', [\App\Http\Controllers\ChatController::class, 'createGroup']);
+
 });
