@@ -1,14 +1,3 @@
-`groups``groups`-- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 08-03-2026 a las 21:59:40
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
-
-whatswhats
-
 USE whats;
 
 
@@ -29,37 +18,6 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 -- 1. Creamos la tabla de Grupos
-CREATE TABLE `groups` (
-  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `created_by` bigint(20) UNSIGNED NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 2. Creamos la tabla para agregar a las personas a los grupos
-CREATE TABLE `group_user` (
-  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `group_id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL,
-  `joined_at` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 3. Modificamos tu tabla de mensajes actual
-ALTER TABLE `messages`
-  -- Permitimos que receiver_id quede vacío (NULL)
-  MODIFY `receiver_id` bigint(20) UNSIGNED NULL,
-  -- Agregamos la columna para saber si es un mensaje de grupo
-  ADD `group_id` bigint(20) UNSIGNED NULL AFTER `receiver_id`,
-  -- Conectamos la columna con la tabla de grupos
-  ADD CONSTRAINT `messages_group_ibfk` FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE CASCADE;
---
--- Estructura de tabla para la tabla `cache`
---
 
 CREATE TABLE `cache` (
   `key` varchar(255) NOT NULL,

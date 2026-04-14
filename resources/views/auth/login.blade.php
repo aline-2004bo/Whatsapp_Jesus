@@ -107,6 +107,34 @@
             color: #00a884;
             font-size: 18px;
         }
+        .biometric-btn{
+width:100%;
+padding:14px;
+background:linear-gradient(145deg,#3b82f6,#1d4ed8);
+color:white;
+border:none;
+border-radius:15px;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+margin-top:10px;
+box-shadow:0 10px 20px rgba(59,130,246,0.3);
+}
+.biometric-btn{
+width:100%;
+padding:14px;
+background:linear-gradient(145deg,#3b82f6,#1d4ed8);
+color:white;
+border:none;
+border-radius:15px;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+margin-top:10px;
+box-shadow:0 10px 20px rgba(59,130,246,0.3);
+}
         
         .input-field {
             width: 100%;
@@ -265,16 +293,13 @@
 
 <div class="login-container">
     
-    <!-- Icono de WhatsApp -->
     <div class="whatsapp-icon">
         <i class="fab fa-whatsapp"></i>
     </div>
     
-    <!-- Título y subtítulo exactamente como en el diseño -->
     <h1>Log In</h1>
     <div class="subtitle">Login here using your username and password</div>
     
-    <!-- Mensaje de sesión -->
     @if (session('status'))
         <div class="session-status">
             <i class="fas fa-info-circle"></i>
@@ -282,11 +307,9 @@
         </div>
     @endif
     
-    <!-- FORMULARIO LOGIN -->
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" id="login-form">
         @csrf
         
-        <!-- Campo Username/Email -->
         <div class="input-group">
             <label class="input-label">
                 <i class="fas fa-user" style="margin-right: 5px; color: #00a884;"></i>
@@ -296,14 +319,14 @@
                 <i class="fas fa-user input-icon"></i>
                 <input 
                     type="email" 
-                    name="email" 
+                    name="email"
+                    id="email-input"
                     value="{{ old('email') }}"
                     class="input-field" 
                     placeholder="Enter your username or email"
                     required
                 >
             </div>
-            <!-- CORRECCIÓN: Mostrar errores sin usar $message -->
             @error('email')
                 <div class="error-message">
                     <i class="fas fa-exclamation-circle"></i>
@@ -312,7 +335,6 @@
             @enderror
         </div>
         
-        <!-- Campo Password -->
         <div class="input-group">
             <label class="input-label">
                 <i class="fas fa-lock" style="margin-right: 5px; color: #00a884;"></i>
@@ -328,7 +350,6 @@
                     required
                 >
             </div>
-            <!-- CORRECCIÓN: Mostrar errores sin usar $message -->
             @error('password')
                 <div class="error-message">
                     <i class="fas fa-exclamation-circle"></i>
@@ -337,26 +358,36 @@
             @enderror
         </div>
         
-        <!-- Checkbox Recordarme (oculto pero funcional) -->
         <input type="checkbox" name="remember" id="remember" checked style="display: none;">
         
-        <!-- Botón Log In -->
         <button type="submit" class="login-btn">
             <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
             Log In
         </button>
         
-        <!-- Forgot Password -->
         <div class="forgot-password">
             <a href="{{ route('password.request') }}">
                 <i class="fas fa-question-circle"></i>
-                Forgot Password
+                Olvide mi contraseña
             </a>
         </div>
-        
+
+        {{-- Botón biométrico --}}
+        <button type="button" onclick="loginBiometric()" class="biometric-btn">
+            <i class="fas fa-fingerprint"></i> FaceID / Huella
+        </button>
+
+        {{-- Mensajes de estado biométrico --}}
+        <p id="bio-error" class="error-message" style="display:none; margin-top:10px;">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="bio-error-text">Error al autenticar con biometría</span>
+        </p>
+        <p id="bio-loading" style="display:none; margin-top:10px; color:#00a884; text-align:center;">
+            <i class="fas fa-spinner fa-spin"></i> Verificando biometría...
+        </p>
+
     </form>
-    
-    <!-- Sign Up Section -->
+
     <div class="signup-section">
         <div class="signup-text">Don't have an account?</div>
         <a href="{{ route('register') }}" class="signup-btn">
@@ -364,13 +395,151 @@
             Sign Up
         </a>
     </div>
-    
 </div>
 
-<!-- Script para mantener la funcionalidad del checkbox recordarme -->
 <script>
-    // El checkbox está oculto pero funcional - siempre marcado por defecto
-    document.getElementById('remember').checked = true;
+const CSRF = '{{ csrf_token() }}';
+
+// ── Utilidades base64url ───────────────────────────────────────────────────
+function base64ToArray(base64) {
+    const b64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(b64);
+    return Uint8Array.from(bin, c => c.charCodeAt(0));
+}
+
+function arrayToBase64(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+function showBioError(msg) {
+    const el = document.getElementById('bio-error');
+    document.getElementById('bio-error-text').textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('bio-loading').style.display = 'none';
+}
+
+function showBioLoading() {
+    document.getElementById('bio-loading').style.display = 'block';
+    document.getElementById('bio-error').style.display = 'none';
+}
+
+function hideBioStatus() {
+    document.getElementById('bio-loading').style.display = 'none';
+    document.getElementById('bio-error').style.display = 'none';
+}
+async function loginBiometric() {
+    hideBioStatus();
+
+    if (!window.PublicKeyCredential) {
+        showBioError('Tu navegador no soporta biometría.');
+        return;
+    }
+
+    const email = document.getElementById('email-input').value.trim();
+    if (!email) {
+        showBioError('Ingresa tu email primero para usar biometría.');
+        document.getElementById('email-input').focus();
+        return;
+    }
+
+    showBioLoading();
+
+    try {
+        // 1. Pedir opciones al servidor
+        const resOpts = await fetch('/webauthn/auth/options', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF,
+                'Accept':       'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email })
+        });
+
+        if (!resOpts.ok) {
+            const err = await resOpts.json().catch(() => ({}));
+            showBioError(err.message ?? 'No se encontraron credenciales biométricas.');
+            return;
+        }
+
+        const raw = await resOpts.json();
+        console.log('Opciones recibidas:', JSON.stringify(raw));
+
+        // El servidor devuelve las opciones SIN envoltura publicKey — se la añadimos
+        const publicKey = raw.publicKey ?? raw;
+
+        // Decodificar challenge (base64url → Uint8Array)
+        publicKey.challenge = base64ToArray(publicKey.challenge);
+        publicKey.rpId      = window.location.hostname;
+
+        // Decodificar allowCredentials
+        if (Array.isArray(publicKey.allowCredentials)) {
+            publicKey.allowCredentials = publicKey.allowCredentials.map(c => ({
+                ...c,
+                id: base64ToArray(c.id),
+            }));
+        }
+
+        // 2. Activar Face ID / Huella
+        let credential;
+        try {
+            credential = await navigator.credentials.get({ publicKey });
+        } catch (e) {
+            console.error('Error autenticador:', e);
+            if (e.name === 'NotAllowedError') {
+                showBioError('Autenticación cancelada o no permitida.');
+            } else {
+                showBioError('Error biométrico: ' + e.message);
+            }
+            return;
+        }
+
+        // 3. Serializar respuesta
+        const payload = {
+            email,
+            id:    credential.id,
+            type:  credential.type,
+            rawId: arrayToBase64(credential.rawId),
+            response: {
+                authenticatorData: arrayToBase64(credential.response.authenticatorData),
+                clientDataJSON:    arrayToBase64(credential.response.clientDataJSON),
+                signature:         arrayToBase64(credential.response.signature),
+                userHandle:        credential.response.userHandle
+                                   ? arrayToBase64(credential.response.userHandle)
+                                   : null,
+            }
+        };
+
+        // 4. Validar en el servidor
+        const resAuth = await fetch('/webauthn/auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF,
+                'Accept':       'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const authData = await resAuth.json().catch(() => null);
+
+        if (!resAuth.ok) {
+            showBioError(authData?.message ?? 'Error al verificar biometría.');
+            return;
+        }
+
+        // 5. Redirigir al chat
+        hideBioStatus();
+        window.location.href = '/chat';
+
+    } catch (err) {
+        console.error('Error inesperado:', err);
+        showBioError('Error inesperado: ' + err.message);
+    }
+}
+
+document.getElementById('remember').checked = true;
 </script>
 
 </body>
